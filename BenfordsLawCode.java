@@ -7,7 +7,7 @@
 
 import java.util.Scanner;
 
-class BenfordsLawAssignment {
+class BenfordsLawCode {
     public static void main(String[] args) {
         Scanner reader = new Scanner(System.in);
 
