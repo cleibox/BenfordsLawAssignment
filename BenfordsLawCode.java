@@ -5,7 +5,7 @@
  * Description: Benfords Law Assignment
  */
 
-import java.util.Scanner;
+import java.util.Scanner; // scanner
 
 class BenfordsLawCode {
     public static void main(String[] args) {
