@@ -85,6 +85,7 @@ class BenfordsLawCode {
             // Outside the while loop since we only get the total frequency
             // when the while loop is finished (all lines are read)
             percentageValue(frequencyArr); 
+            
             printArray(frequencyArr);
         }
         // Program cannot find file
@@ -152,6 +153,8 @@ class BenfordsLawCode {
             percentageArr[i] = Math.round((arr[i]*1.0/totalFrequency) * 100 * 100.0) / 100.0;
         }
         printArrayDouble(percentageArr); // testing to see if it works
+        
+        System.out.println("Fraud present: " + isThereFraudValidation(percentageArr)); // fraud detection
     }
 
     /**
@@ -167,6 +170,22 @@ class BenfordsLawCode {
             sum += arr[i]; // accumulator variable
         }
         return sum;    
+    }
+
+    /**
+     * @author Cynthia Lei
+     * Determining if there is fraud
+     * 
+     * @param arr
+     * @return false if there is no fraud; otherwise true
+     */
+    public static boolean isThereFraudValidation(double[] arr){
+        if (arr[0] < 32.0 && arr[0] > 29.0){
+            return false;
+        }
+        else{
+            return true;
+        }
     }
 
     // Print the array
@@ -186,4 +205,8 @@ class BenfordsLawCode {
         }
         System.out.println();
     }
+
+    
+
+
 }
