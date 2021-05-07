@@ -81,7 +81,9 @@ class BenfordsLawCode {
                 // Populates the array
                 tempArr = countValue(line, frequencyArr);
                 frequencyArr = tempArr;
+                
             }
+            
             printArray(frequencyArr);
         }
         // Program cannot find file
@@ -132,8 +134,28 @@ class BenfordsLawCode {
         return frequencyArr;
     
     }
+
+    
+
+    public static int sumArrElements(int[] arr){
+        int sum = 0;
+        for (int i = 0; i < arr.length; i++){
+            sum += arr[i];
+        }
+        return sum;    
+    }
+
     // Print the array
     public static void printArray(int[] arr){
+        for (int i = 0; i < arr.length; i++){
+            System.out.print(arr[i]);
+            System.out.print("|");
+        }
+        System.out.println();
+    }
+
+    // I WILL DELETE THIS IN THE FUTURE SINCE WE DON'T REALLY NEED TO PRINT OUT THE PERCENTAGE ARRAY
+    public static void printArrayDouble(double[] arr){
         for (int i = 0; i < arr.length; i++){
             System.out.print(arr[i]);
             System.out.print("|");
