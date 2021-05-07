@@ -13,11 +13,13 @@ import java.io.File; // scanner
 
 class BenfordsLawCode {
     public static void main(String[] args) {
-        String userInput, readFileName, generateBargraph, generateCSVFile,exitCondition;
-        readFileName = "1";
-        generateBargraph = "2";
-        generateCSVFile = "3";
+        String userInput, generateBargraph, generateCSVFile,exitCondition;
+        generateBargraph = "1";
+        generateCSVFile = "2";
         exitCondition = "9";
+        // Initializing the arrays
+        int[] frequencyArr = new int[9];
+        double[] percentageArr = new double[frequencyArr.length];
         Scanner reader = new Scanner(System.in);
         // Prompts user to enter pathway
         System.out.println("What is the pathway to reach the folder?");
@@ -25,20 +27,18 @@ class BenfordsLawCode {
         // Prompts user to enter name
         System.out.println("What is the file name you want read");
         String name = reader.nextLine();
+        readFile(path, name, frequencyArr, percentageArr);
 
         do{
             // Print the menu option
             printMenu();
             userInput = reader.nextLine();
-            // User chooses to read file
-            if (userInput.equals(readFileName)){
-                readFile(path,name);
-            }
             // User chooses to generate bargraph
-            else if (userInput.equals(generateBargraph)){
+            if (userInput.equals(generateBargraph)){
             }
             // User chooses to generate CSV file
             else if (userInput.equals(generateCSVFile)){
+                generateCustomerDataFile(reader, path, percentageArr);
             }
             // User chooses to exit
             else if (userInput.equals(exitCondition)){
@@ -55,47 +55,48 @@ class BenfordsLawCode {
     // Prints menu
     public static void printMenu(){
         System.out.println("Benfords Law Code\n"
-        .concat("1. Read Sales File\n")
-        .concat("2. Print Bargraph\n")
-        .concat("3. Print CSV File\n")
+        .concat("1. Print Bargraph\n")
+        .concat("2. Print CSV File\n")
         .concat("9. Quit\n")
         .concat("Enter menu option (1-9)\n")
         );
     }
-    // Reads the file
-    public static void readFile(String route, String title){
+    /**
+     * @author Sophia Nguyen
+     * @param route is the pathway to get to the file
+     * @param title is the name of the file
+     * @param numArr is the frequency in integers
+     * @param valueArr is the frequency in percentage
+     */
+    public static void readFile(String route, String title, int[] numArr, double[] valueArr){
         String line = "";
-        int frequency = 0;
-        int count = 0;
-        int[] frequencyArr = new int[9];
-        int[] tempArr = new int[9];
         try{ 
             File file = new File(route+title);
             BufferedReader br = new BufferedReader(new FileReader(file));
             while ((line = br.readLine()) != null){
-                // Calls the count value
-                //count = countValue(line,frequency);
-                //frequency = count;
-                //System.out.println(frequency);
-                
                 // Populates the array
-                tempArr = countValue(line, frequencyArr);
-                frequencyArr = tempArr;
+                numArr = countValue(line, numArr);
             }
             // Outside the while loop since we only get the total frequency
             // when the while loop is finished (all lines are read)
-            percentageValue(frequencyArr); 
-            printArray(frequencyArr);
+            percentageValue(numArr,valueArr); 
+            printArray(numArr);
         }
         // Program cannot find file
         catch (IOException e){ 
             System.out.println("Invalid");
         }
     }
-    // Takes the first digit
-    public static int[] countValue(String number, int[] frequencyArr){
-        String line  = number;
-        char firstNumber = line.charAt(4);
+    /**
+     * @author Sophia Nguyen
+     * @param information is the information read by br
+     * @param frequencyArr is the array that stores each frequency
+     * @return
+     */
+    public static int[] countValue(String information, int[] frequencyArr){
+        // Taking the fourth character of each line
+        // This will be the first number
+        char firstNumber = information.charAt(4);
         // Checking frequency for 1
         if(Character.compare(firstNumber, '1') == 0){
             frequencyArr[0] += 1;
@@ -142,16 +143,15 @@ class BenfordsLawCode {
      * 
      * @param arr this contains all the digit frequencies 
      */
-    public static void percentageValue(int[] arr){
-        int totalFrequency = sumArrElements(arr); // get the total frequency
-        double[] percentageArr = new double[arr.length]; // 
+    public static void percentageValue(int[] arr, double[] valueArr){
+        int totalFrequency = sumArrElements(arr); // get the total frequency 
         
         // read through each digit frequency
         for (int i = 0; i < arr.length; i++){
             // round to 2 decimal places and as percentage (%)
-            percentageArr[i] = Math.round((arr[i]*1.0/totalFrequency) * 100 * 100.0) / 100.0;
+            valueArr[i] = Math.round((arr[i]*1.0/totalFrequency) * 100 * 100.0) / 100.0;
         }
-        printArrayDouble(percentageArr); // testing to see if it works
+        printArrayDouble(valueArr); // testing to see if it works
     }
 
     /**
@@ -168,8 +168,12 @@ class BenfordsLawCode {
         }
         return sum;    
     }
-
-    // Print the array
+    /**
+     * @author Sophia Nguyen
+     * Print the given array
+     * Procedural method as its only executing a commang
+     * @param arr that needs to be printed
+     */
     public static void printArray(int[] arr){
         for (int i = 0; i < arr.length; i++){
             System.out.print(arr[i]);
@@ -185,5 +189,55 @@ class BenfordsLawCode {
             System.out.print("|");
         }
         System.out.println();
+    }
+    /**
+     * @author Sophia Nguyen
+     * Procedural method to create a csv file
+     * @param reader to take in user input
+     * @param pathway to reach the directory folder
+     * @param percentageArr to print out information
+     */
+    public static void generateCustomerDataFile(Scanner reader, String pathway, double[] percentageArr){
+        String content = "";
+        try{
+            System.out.println("Would you like to store your information on a csv file?");
+            String store = reader.nextLine();
+            // User wants to store their info on a csv file
+            if(store.equals("Yes"))
+            {
+                // Allows user to name the file
+                System.out.println("What would you like to name your file?");
+                String name = reader.nextLine();
+                String info = (pathway + name + ".csv");
+                // Creating the new csv file
+                BufferedWriter bw = new BufferedWriter(new FileWriter(info));  
+                PrintWriter pw = new PrintWriter(bw);
+                // Adding info into the database file
+                String title = ("First Digit | Relative Frequency (%)");
+                // Typing out the information
+                pw.print((title+ "\n")
+                .concat(contentCSV(percentageArr,content))
+                );
+                bw.close();
+                pw.close();
+            }
+        }
+        catch(Exception e){
+            System.out.println("Fail");
+        }
+    }
+    /**
+     * @author Sophia nguyen
+     * @param arr to retrieve content of array
+     * @param content String that will be printed on seperate CSV file
+     * @return the string that will be printed later
+     */
+    public static String contentCSV(double[] arr, String content){
+        // For looping to read each line
+        for(int i = 0; i < arr.length; i++){
+            // The string stores the information that will later be printed
+            content += ((i+1) + " | " + arr[i] + "\n");
+        }
+        return content;
     }
 }
