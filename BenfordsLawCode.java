@@ -81,9 +81,10 @@ class BenfordsLawCode {
                 // Populates the array
                 tempArr = countValue(line, frequencyArr);
                 frequencyArr = tempArr;
-                
             }
-            
+            // Outside the while loop since we only get the total frequency
+            // when the while loop is finished (all lines are read)
+            percentageValue(frequencyArr); 
             printArray(frequencyArr);
         }
         // Program cannot find file
@@ -135,12 +136,35 @@ class BenfordsLawCode {
     
     }
 
-    
+    /**
+     * @author Cynthia Lei
+     * Determining the relative frequency of each digit frequency 
+     * 
+     * @param arr this contains all the digit frequencies 
+     */
+    public static void percentageValue(int[] arr){
+        int totalFrequency = sumArrElements(arr); // get the total frequency
+        double[] percentageArr = new double[arr.length]; // 
+        
+        // read through each digit frequency
+        for (int i = 0; i < arr.length; i++){
+            // round to 2 decimal places and as percentage (%)
+            percentageArr[i] = Math.round((arr[i]*1.0/totalFrequency) * 100 * 100.0) / 100.0;
+        }
+        printArrayDouble(percentageArr); // testing to see if it works
+    }
 
+    /**
+     * @author Cynthia Lei
+     * Summing up the elements in a given array
+     * 
+     * @param arr this contains all the digit frequencies
+     * @return the sum of all elements in this array
+     */
     public static int sumArrElements(int[] arr){
         int sum = 0;
         for (int i = 0; i < arr.length; i++){
-            sum += arr[i];
+            sum += arr[i]; // accumulator variable
         }
         return sum;    
     }
