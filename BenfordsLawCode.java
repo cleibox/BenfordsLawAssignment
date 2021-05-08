@@ -37,30 +37,40 @@ class BenfordsLawCode {
         // Prompts user to enter name
         System.out.println("What is the file name you want read");
         String name = reader.nextLine();
+        
+        System.out.println();
+
         readFile(path, name, frequencyArr, percentageArr);
 
-        do{
-            // Print the menu option
-            printMenu();
-            userInput = reader.nextLine();
-            // User chooses to generate bargraph
-            if (userInput.equals(generateBargraph)){
-                generateBarGraph(percentageArr);
-            }
-            // User chooses to generate CSV file
-            else if (userInput.equals(generateCSVFile)){
-                generateCustomerDataFile(reader, path, percentageArr);
-            }
-            // User chooses to exit
-            else if (userInput.equals(exitCondition)){
-                reader.close();
-                System.out.println("Program Terminated");
-            }
-            // User chooses an invalid option
-            else{
-                System.out.println("Please type in a valid option");
-            }
-        } while (!userInput.equals(exitCondition));      
+        System.out.println("Generating 'results.csv' and the bar graph image ......");
+        generateBarGraph(percentageArr);
+        generateCustomerDataFile(reader, path, percentageArr);
+
+        // do{
+        //     // Print the menu option
+        //     printMenu();
+        //     userInput = reader.nextLine();
+        //     // User chooses to generate bargraph
+        //     if (userInput.equals(generateBargraph)){
+        //         generateBarGraph(percentageArr);
+        //     }
+        //     // User chooses to generate CSV file
+        //     else if (userInput.equals(generateCSVFile)){
+        //         generateCustomerDataFile(reader, path, percentageArr);
+        //     }
+        //     // User chooses to exit
+        //     else if (userInput.equals(exitCondition)){
+        //         reader.close();
+        //         System.out.println("Program Terminated");
+        //     }
+        //     // User chooses an invalid option
+        //     else{
+        //         System.out.println("Please type in a valid option");
+        //     }
+        // } while (!userInput.equals(exitCondition)); 
+        
+        System.out.println("\nEnd of Program");
+        
         reader.close();
     }
 
@@ -94,15 +104,15 @@ class BenfordsLawCode {
             // when the while loop is finished (all lines are read)
             percentageValue(numArr,valueArr); 
             //GET RID OF FEATURE LATER
-            printArray(numArr);
-            br.close(); // close buffer reader
+            // printArray(numArr);
+            br.close(); // close buffered reader
         }
         // Program cannot find file
         catch (IOException e){ 
             System.out.println("Invalid");
         }
     }
-    
+
     /**
      * @author Sophia Nguyen
      * @param information is the information read by br
@@ -159,17 +169,25 @@ class BenfordsLawCode {
      * 
      * @param arr this contains all the digit frequencies 
      */
-    public static void percentageValue(int[] arr, double[] valueArr){
+
+    /**
+     * @author Cynthia Lei
+     * Determining the relative frequency of each digit frequency 
+     * 
+     * @param arr this contains all the digit frequencies 
+     * @param percentArr this contains all the digit relative frequencies 
+     */
+    public static void percentageValue(int[] arr, double[] percentArr){
         int totalFrequency = sumArrElements(arr); // get the total frequency 
         
         // read through each digit frequency
         for (int i = 0; i < arr.length; i++){
             // round to 2 decimal places and as percentage (%)
-            valueArr[i] = Math.round((arr[i]*1.0/totalFrequency) * 100 * 100.0) / 100.0;
+            percentArr[i] = Math.round((arr[i]*1.0/totalFrequency) * 100 * 100.0) / 100.0;
         }
-        printArrayDouble(valueArr); // testing to see if it works
+        // printArrayDouble(valueArr); // testing to see if it works
 
-        System.out.println("Fraud present: " + isThereFraudValidation(valueArr));
+        System.out.println("Fraud present: " + isThereFraudValidation(percentArr));
     }
 
     /**
@@ -191,11 +209,11 @@ class BenfordsLawCode {
      * @author Cynthia Lei
      * Determining if there is fraud
      * 
-     * @param arr
+     * @param arr this contains all the digit relative frequencies 
      * @return false if there is no fraud; otherwise true
      */
-    public static boolean isThereFraudValidation(double[] arr){
-        if (arr[0] < 32.0 && arr[0] > 29.0){
+    public static boolean isThereFraudValidation(double[] percentArr){
+        if (percentArr[0] < 32.0 && percentArr[0] > 29.0){
             return false;
         }
         else{
@@ -236,9 +254,10 @@ class BenfordsLawCode {
     public static void generateCustomerDataFile(Scanner reader, String pathway, double[] percentageArr){
         String content = "";
         try{
-            System.out.println("You should see the created csv file called 'results.csv' in your directory of sales.csv.");
+            String fileName = "results.csv";
+            System.out.println("You should see the created csv file called '" + fileName +  "' in the directory with sales.csv.");
             // File name
-            String info = (pathway + "results.csv");
+            String info = (pathway + fileName);
             // Creating the new csv file
             BufferedWriter bw = new BufferedWriter(new FileWriter(info));  
             PrintWriter pw = new PrintWriter(bw);
@@ -298,6 +317,8 @@ class BenfordsLawCode {
         int width = 640;    // Image Width
         int height = 480;   // Image Height
         File barChartName = new File("BenfordBarChart.png"); // File name
+        
+        System.out.println("View the bar graph image in this program's directory.");
         
         try{
             ChartUtils.saveChartAsPNG(barChartName, barChart, width, height );
