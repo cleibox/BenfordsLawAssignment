@@ -8,7 +8,7 @@
 import java.io.IOException;
 import java.util.Scanner; // scanner
 import java.io.*;
-import java.io.File; 
+import java.io.File;
 
 // jfreechart imports (bar graph)
 import org.jfree.chart.ChartFactory;
@@ -28,7 +28,7 @@ class BenfordsLawCode {
         int[] frequencyArr = new int[9];
         double[] percentageArr = new double[frequencyArr.length];
         
-        Scanner reader = new Scanner(System.in);
+        Scanner reader = new Scanner(System.in); // Scanner
         
         // Prompts user to enter pathway
         System.out.println("What is the pathway to reach the folder?");
@@ -63,6 +63,7 @@ class BenfordsLawCode {
         } while (!userInput.equals(exitCondition));      
         reader.close();
     }
+
     // Prints menu
     public static void printMenu(){
         System.out.println("Benfords Law Code\n"
@@ -72,6 +73,7 @@ class BenfordsLawCode {
         .concat("Enter menu option (1-9)\n")
         );
     }
+
     /**
      * @author Sophia Nguyen
      * @param route is the pathway to get to the file
@@ -93,12 +95,14 @@ class BenfordsLawCode {
             percentageValue(numArr,valueArr); 
             //GET RID OF FEATURE LATER
             printArray(numArr);
+            br.close(); // close buffer reader
         }
         // Program cannot find file
         catch (IOException e){ 
             System.out.println("Invalid");
         }
     }
+    
     /**
      * @author Sophia Nguyen
      * @param information is the information read by br
@@ -182,8 +186,8 @@ class BenfordsLawCode {
         }
         return sum;    
     }
+
     /**
-     * 
      * @author Cynthia Lei
      * Determining if there is fraud
      * 
@@ -198,6 +202,7 @@ class BenfordsLawCode {
             return true;
         }
     }
+
     /**
      * @author Sophia Nguyen
      * Print the given array
@@ -231,33 +236,27 @@ class BenfordsLawCode {
     public static void generateCustomerDataFile(Scanner reader, String pathway, double[] percentageArr){
         String content = "";
         try{
-            System.out.println("Would you like to store your information on a csv file?");
-            String store = reader.nextLine();
-            // User wants to store their info on a csv file
-            if(store.equals("Yes"))
-            {
-                // Allows user to name the file
-                System.out.println("What would you like to name your file?");
-                String name = reader.nextLine();
-                String info = (pathway + name + ".csv");
-                // Creating the new csv file
-                BufferedWriter bw = new BufferedWriter(new FileWriter(info));  
-                PrintWriter pw = new PrintWriter(bw);
-                // Adding info into the database file
-                String title = ("First Digit | Relative Frequency (%)");
-                // Typing out the information
-                pw.print((title+ "\n")
-                .concat(contentCSV(percentageArr,content))
-                );
-                bw.close();
-                pw.close();
-            }
+            System.out.println("You should see the created csv file called 'results.csv' in your directory of sales.csv.");
+            // File name
+            String info = (pathway + "results.csv");
+            // Creating the new csv file
+            BufferedWriter bw = new BufferedWriter(new FileWriter(info));  
+            PrintWriter pw = new PrintWriter(bw);
+            // Adding info into the database file
+            String title = ("First Digit | Relative Frequency (%)");
+            // Typing out the information
+            pw.print((title+ "\n")
+            .concat(contentCSV(percentageArr,content))
+            );
+            bw.close();
+            pw.close();
+        
         }
         catch(Exception e){
             System.out.println("Fail");
         }
     }
-    
+
     /**
      * @author Sophia nguyen
      * A method for content that will be printed later
@@ -283,7 +282,7 @@ class BenfordsLawCode {
     public static void generateBarGraph(double[] percentArr) {
         String[] labelsArr = {"1", "2", "3", "4", "5", "6", "7", "8", "9"}; // x-axis labels
   
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset(); //jfreechart datatype
         
         for (int i = 0; i < labelsArr.length; i++){
             // add each data point (y-value, legend, x-value)
