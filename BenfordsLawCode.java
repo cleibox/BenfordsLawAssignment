@@ -7,9 +7,15 @@
 
 // Testing branch
 import java.io.IOException;
-import java.util.Scanner;
+import java.util.Scanner; // scanner
 import java.io.*;
-import java.io.File; // scanner
+import java.io.File; 
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.chart.ChartUtils;
 
 class BenfordsLawCode {
     public static void main(String[] args) {
@@ -35,6 +41,7 @@ class BenfordsLawCode {
             userInput = reader.nextLine();
             // User chooses to generate bargraph
             if (userInput.equals(generateBargraph)){
+                generateBarGraph();
             }
             // User chooses to generate CSV file
             else if (userInput.equals(generateCSVFile)){
@@ -209,6 +216,7 @@ class BenfordsLawCode {
         }
         System.out.println();
     }
+
     /**
      * @author Sophia Nguyen
      * Procedural method to create a csv file
@@ -260,4 +268,48 @@ class BenfordsLawCode {
         }
         return content;
     }
+
+    public static void generateBarGraph() {
+        final String fiat = "FIAT";
+        final String audi = "AUDI";
+        final String ford = "FORD";
+        final String speed = "Speed";
+        final String millage = "Millage";
+        final String userrating = "User Rating";
+        final String safety = "safety";
+  
+        final DefaultCategoryDataset dataset = new DefaultCategoryDataset( );
+        dataset.addValue( 1.0 , fiat , speed );
+        dataset.addValue( 3.0 , fiat , userrating );
+        dataset.addValue( 5.0 , fiat , millage );
+        dataset.addValue( 5.0 , fiat , safety );
+  
+        dataset.addValue( 5.0 , audi , speed );
+        dataset.addValue( 6.0 , audi , userrating );
+        dataset.addValue( 10.0 , audi , millage );
+        dataset.addValue( 4.0 , audi , safety );
+  
+        dataset.addValue( 4.0 , ford , speed );
+        dataset.addValue( 2.0 , ford , userrating );
+        dataset.addValue( 3.0 , ford , millage );
+        dataset.addValue( 6.0 , ford , safety );
+  
+        JFreeChart barChart = ChartFactory.createBarChart(
+           "Benford's Law Distribution Leading Digit", // Graph title 
+           "Digit", "Percent", // x-axis title, y-axis title
+           dataset,PlotOrientation.VERTICAL, // range axis is vertical
+           true, true, false);
+           
+        int width = 640;    // Image Width
+        int height = 480;   // Image Height
+        File barChartName = new File( "BenfordBarChart.png" ); // File name
+        
+        try{
+            ChartUtils.saveChartAsPNG(barChartName , barChart , width , height );
+        }
+        catch (IOException e){
+            System.out.println("Error saving file");
+        }
+     }
 }
+
