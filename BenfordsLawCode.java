@@ -13,6 +13,8 @@ import java.io.*;
 import java.io.File;
 
 // jfreechart imports (bar graph)
+// Get the included jar file in the github
+// In VSCode, Explorer > JAVA PROJECTS > Referenced Libraries > Add library (the jar file)
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
@@ -262,7 +264,7 @@ class BenfordsLawCode {
         String xAxisTitle = "First Digit";
         String yAxisTitle = "Relative Frequency (%)";
   
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset(); //jfreechart datatype
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset(); //jfreechart dataset
         
         for (int i = 0; i < labelsArr.length; i++){
             // add each data point (y-value, legend, x-value)
