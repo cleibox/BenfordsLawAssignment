@@ -11,9 +11,9 @@ import java.io.IOException;
 import java.io.*;
 import java.io.File;
 
-// CSV reader API
+// CSV reader
 // Get the included jar file in the github
-// In VSCode, Explorer > JAVA PROJECTS > Referenced Libraries > Add library (the two jar files)
+// In VSCode, Explorer > JAVA PROJECTS > Referenced Libraries > Add library (the jar file)
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -78,13 +78,14 @@ class BenfordsLawCode {
      * @param first is used to grab the first number
      * @param pathway is the path to access file
      * @param title is the name of file
-     * @param valueArr is the frequency in percentage
+     * @param percentArr is the frequency in percentage
      * @return false if file is not found, otherwise true
      */
-    public static boolean readFile(int[] numArr, char first, String pathway, String title, double[] valueArr){
+    public static boolean readFile(int[] numArr, char first, String pathway, String title, double[] percentArr){
         try{
             Reader reader = Files.newBufferedReader(Paths.get(pathway + title));
             CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
+            // Reads all of the lines
             for (CSVRecord csvRecord : csvParser) {
                 // Reads second column
                 String sales = csvRecord.get(1);
@@ -93,47 +94,55 @@ class BenfordsLawCode {
                 // Populates the array 
                 numArr = countValue(first, numArr);
             }
-            percentageValue(numArr,valueArr); 
+            // Turning into percentage
+            percentageValue(numArr,percentArr);
+            // Closing parser
+            csvParser.close();
         }
+        // File path or name was inputted incorrectly or file was not found
         catch(Exception e){
-            System.out.println("Cannot find file. Please reinput.");
+            System.out.println("Error occured. Please reinput.");
+            // Main method loops
             return false;
         }
         return true;
     }
+
     /**
      * @author Sophia Nguyen
      * To count up how many times the first number occurs to prove Benfords law of distribution
      * 
-     * @param information is the information read by buffered reader (br)
-     * @param frequencyArr is the array that stores each frequency
+     * @param information is the first digit read by buffered reader (br)
+     * @param numArr is the array that stores each frequency
      * @return an array that carries the frequency
      */
-    public static int[] countValue(int information, int[] frequencyArr){
+    public static int[] countValue(char information, int[] numArr){
         int firstDigit = Character.getNumericValue(information);  
         // Checking frequency by for looping to check for matches
         // if it matches, then it would at 1 to that index of the array
         for (int i = 0; i < 9; i++){
+            // Since loop starts at 0, i+1 is used to check for match
+            // If first digit in CSV matches i+1
             if(firstDigit==i+1){
-                frequencyArr[i] += 1;
+                numArr[i] += 1;
             }
         }
-        return frequencyArr;
+        return numArr;
     }
     /**
      * @author Cynthia Lei
      * Determining the relative frequency of each digit frequency 
      * 
-     * @param arr this contains all the digit frequencies 
+     * @param numArr this contains all the digit frequencies 
      * @param percentArr this contains all the digit relative frequencies 
      */
-    public static void percentageValue(int[] arr, double[] percentArr){
-        int totalFrequency = sumArrElements(arr); // get the total frequency 
+    public static void percentageValue(int[] numArr, double[] percentArr){
+        int totalFrequency = sumArrElements(numArr); // get the total frequency 
         
         // read through each digit frequency
-        for (int i = 0; i < arr.length; i++){
+        for (int i = 0; i < numArr.length; i++){
             // round to 2 decimal places and as percentage (%)
-            percentArr[i] = Math.round((arr[i]*1.0/totalFrequency) * 100 * 100.0) / 100.0;
+            percentArr[i] = Math.round((numArr[i]*1.0/totalFrequency) * 100 * 100.0) / 100.0;
         }
 
         System.out.println("Fraud (likeliness) present: " + isThereFraudValidation(percentArr));
@@ -143,13 +152,13 @@ class BenfordsLawCode {
      * @author Cynthia Lei
      * Summing up the elements in a given array
      * 
-     * @param arr this contains all the digit frequencies
+     * @param numArr this contains all the digit frequencies
      * @return the sum of all elements in the array
      */
-    public static int sumArrElements(int[] arr){
+    public static int sumArrElements(int[] numArr){
         int sum = 0;
-        for (int i = 0; i < arr.length; i++){
-            sum += arr[i]; // accumulator variable
+        for (int i = 0; i < numArr.length; i++){
+            sum += numArr[i]; // accumulator variable
         }
         return sum;    
     }
@@ -192,9 +201,9 @@ class BenfordsLawCode {
      * 
      * @param reader to take in user input
      * @param pathway to reach the directory folder
-     * @param percentageArr to print out information
+     * @param percentArr to print out information
      */
-    public static void generateCustomerDataFile(Scanner reader, String pathway, double[] percentageArr){
+    public static void generateCustomerDataFile(Scanner reader, String pathway, double[] percentArr){
         String content = "";
         try{
             String fileName = "results.csv";
@@ -207,12 +216,12 @@ class BenfordsLawCode {
             BufferedWriter bw = new BufferedWriter(new FileWriter(info));  
             PrintWriter pw = new PrintWriter(bw);
             
-            // Adding info into the database file
+            // Title of results.csv
             String title = ("First Digit | Relative Frequency (%)");
             
             // Typing out the information
             pw.print((title+ "\n")
-            .concat(contentCSV(percentageArr,content))
+            .concat(contentCSV(percentArr,content))
             );
             bw.close();
             pw.close();
@@ -225,15 +234,16 @@ class BenfordsLawCode {
     /**
      * @author Sophia nguyen
      * A method for content that will be printed later
-     * @param arr to retrieve content of array
+     * 
+     * @param percentArr to retrieve content of array stored as a percent
      * @param content String that will be printed on seperate CSV file
      * @return the string that will be printed later
      */
-    public static String contentCSV(double[] arr, String content){
+    public static String contentCSV(double[] percentArr, String content){
         // For looping to read each line
-        for(int i = 0; i < arr.length; i++){
+        for(int i = 0; i < percentArr.length; i++){
             // The string stores the information that will later be printed
-            content += ((i+1) + " | " + arr[i] + "\n");
+            content += ((i+1) + " | " + percentArr[i] + "\n");
         }
         return content;
     }
