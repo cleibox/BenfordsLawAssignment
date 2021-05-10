@@ -6,11 +6,20 @@
  */
 
 import java.util.Scanner; // scanner
-
 // File imports
 import java.io.IOException;
 import java.io.*;
 import java.io.File;
+
+// CSV reader API
+// Get the included jar file in the github
+// In VSCode, Explorer > JAVA PROJECTS > Referenced Libraries > Add library (the two jar files)
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 // jfreechart imports (bar graph)
 // Get the included jar file in the github
@@ -29,10 +38,12 @@ class BenfordsLawCode {
         double[] percentageArr = new double[frequencyArr.length];
         
         Scanner reader = new Scanner(System.in); // Scanner
-        
+        // Boolean to alert user if file is not found and loops until inputted correctly
         boolean fileExists = false;
+        // Initializing variables
         String path = "";
         String name = "";
+        char firstNumber = '\0';
 
         // Force user to reinput if no file is found
         do{
@@ -46,7 +57,7 @@ class BenfordsLawCode {
             
             System.out.println();
 
-            fileExists = readFile(path, name, frequencyArr, percentageArr);
+            fileExists = readFile(frequencyArr, firstNumber, path, name, percentageArr);
         } while (fileExists == false);
 
         System.out.println("Generating the csv file and bar graph image ......");
@@ -63,50 +74,32 @@ class BenfordsLawCode {
      * Method to read the file that user has provided
      * If the file is not found, user will be alerted
      * 
-     * @param route is the pathway to get to the file
-     * @param title is the name of the file
      * @param numArr is the frequency in integers
+     * @param first is used to grab the first number
+     * @param pathway is the path to access file
+     * @param title is the name of file
      * @param valueArr is the frequency in percentage
      * @return false if file is not found, otherwise true
      */
-    public static boolean readFile(String route, String title, int[] numArr, double[] valueArr){
-        String line = "";
-        try{ 
-            File file = new File(route+title);
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            while ((line = br.readLine()) != null){
-                // Populates the array
-                numArr = countValue(line, numArr);
+    public static boolean readFile(int[] numArr, char first, String pathway, String title, double[] valueArr){
+        try{
+            Reader reader = Files.newBufferedReader(Paths.get(pathway + title));
+            CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
+            for (CSVRecord csvRecord : csvParser) {
+                // Reads second column
+                String sales = csvRecord.get(1);
+                // Grabs first character
+                first = sales.charAt(0);
+                // Populates the array 
+                numArr = countValue(first, numArr);
             }
-            // Outside the while loop since we only get the total frequency when the while loop is finished (all lines are read)
             percentageValue(numArr,valueArr); 
-            
-            br.close(); // close buffered reader
         }
-        // Program cannot find file
-        catch (IOException e){ 
+        catch(Exception e){
             System.out.println("Cannot find file. Please reinput.");
             return false;
         }
         return true;
-    }
-    /**
-     * @author Sophia Nguyen
-     * Method that finds where the comma is located
-     * @param row is the line of information from the sales.csv file
-     * @return the number where the comma is located
-     */
-    public static int findSpace(String row){
-        int len = row.length();
-        for (int i = 0; i < len; i++){
-            // If statements to check for the comma
-            if (row.charAt(i) == ','){
-                return i;
-            }
-        }
-        // Base case for if there is a string that has no commas
-        return 0;
-
     }
     /**
      * @author Sophia Nguyen
@@ -116,50 +109,17 @@ class BenfordsLawCode {
      * @param frequencyArr is the array that stores each frequency
      * @return an array that carries the frequency
      */
-    public static int[] countValue(String information, int[] frequencyArr){
-        // Finding the comma of the line on sales.csv
-        int comma = findSpace(information);
-        // This will be the first number since it is located at the space right after comma
-        char firstNumber = information.charAt(comma+1);
-        // Checking frequency for 1
-        if(Character.compare(firstNumber, '1') == 0){
-            frequencyArr[0] += 1;
-        }
-        // Checking frequency for 2
-        else if(Character.compare(firstNumber, '2') == 0){
-            frequencyArr[1] += 1;
-        }
-        // Checking frequency for 3
-        else if(Character.compare(firstNumber, '3') == 0){
-            frequencyArr[2] += 1;
-        }
-        // Checking frequency for 4
-        else if(Character.compare(firstNumber, '4') == 0){
-            frequencyArr[3] += 1;
-        }
-        // Checking frequency for 5
-        else if(Character.compare(firstNumber, '5') == 0){
-            frequencyArr[4] += 1;
-        }
-        // Checking frequency for 6
-        else if(Character.compare(firstNumber, '6') == 0){
-            frequencyArr[5] += 1;
-        }
-        // Checking frequency for 7
-        else if(Character.compare(firstNumber, '7') == 0){
-            frequencyArr[6] += 1;
-        }
-        // Checking frequency for 8
-        else if(Character.compare(firstNumber, '8') == 0){
-            frequencyArr[7] += 1;
-        }
-        // Checking frequency for 9
-        else if(Character.compare(firstNumber, '9') == 0){
-            frequencyArr[8] += 1;
+    public static int[] countValue(int information, int[] frequencyArr){
+        int firstDigit = Character.getNumericValue(information);  
+        // Checking frequency by for looping to check for matches
+        // if it matches, then it would at 1 to that index of the array
+        for (int i = 0; i < 9; i++){
+            if(firstDigit==i+1){
+                frequencyArr[i] += 1;
+            }
         }
         return frequencyArr;
     }
-
     /**
      * @author Cynthia Lei
      * Determining the relative frequency of each digit frequency 
@@ -215,6 +175,7 @@ class BenfordsLawCode {
      * @author Sophia Nguyen
      * Print the given array
      * Procedural method as its only executing a command
+     * 
      * @param arr that needs to be printed
      */
     public static void printArray(int[] arr){
@@ -228,6 +189,7 @@ class BenfordsLawCode {
     /**
      * @author Sophia Nguyen
      * Procedural method to create a csv file
+     * 
      * @param reader to take in user input
      * @param pathway to reach the directory folder
      * @param percentageArr to print out information
